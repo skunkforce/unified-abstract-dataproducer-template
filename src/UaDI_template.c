@@ -57,12 +57,14 @@ uadi_status uadi_enumerate(uadi_lib_handle handle, uadi_chunk_ptr device_list)
     return 0;
 };
 
-uadi_status uadi_claim_device(
+DLL_EXPORT uadi_status uadi_claim_device(
     uadi_lib_handle lib_handle, 
     uadi_device_handle* device_handle, 
-    char const* device_key)
+    char const* device_key, 
+    uadi_receive_callback callback, 
+    void* user_data)
 {
-    
+
     return 0;
 };
 
@@ -70,14 +72,6 @@ uadi_status uadi_push_chunks(
     uadi_device_handle device_handle, 
     uadi_chunk_ptr* chunk_array, 
     size_t chunk_count)
-{
-    return 0;
-};
-
-uadi_status uadi_register_receive_callback(
-    uadi_device_handle device_handle, 
-    uadi_receive_callback callback, 
-    void* user_data)
 {
     return 0;
 };

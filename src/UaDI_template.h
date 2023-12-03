@@ -141,13 +141,30 @@ DLL_EXPORT uadi_status uadi_enumerate(uadi_lib_handle handle, uadi_chunk_ptr dev
  * @param lib_handle Pointer to the library handle.
  * @param device_handle Pointer to the preallocated empty device handle.
  * @param device_key Pointer to a zero-terminated array of characters containing the device key.
+ * @param callback Pointer to the callback function.
+ * @param user_data Pointer to the consumers context.
+ * @param chunk_array Pointer to the preallocated chunk array.
+ * @param chunk_count Number of chunks in the chunk array.
  * @return uadi_status Status code of the operation.
  * @see uadi_enumerate(...)
  * @see uadi_release_device(...)
+ * @see push_chunks(...)
+ * This function is the heart of the measurement process.
+ * It is used by the consumer to properly claim and set up a device.
+ * In order for the device to function, it needs memory to store received data from the device, as well as a routine from the consumer, that is called when new data is available.
  * The consumer needs to keep the device handle and use it with other calls. The device handle is implicitly also holds the library handle.
  * The device handle is an exclusive handle, meaning, that only one consumer at a time can claim it. Leaking the handle will result in a loss of the claimed device.
+ * The callback function is called whenever a new chunk from the device is available. A device can't be released as long as there is available data from the device. The release function will stop the new acquisition of data, but will make sure, that the callback function is called with all available data.
+ * The user data pointer is used by the consumer to provide context for the function. It might be a pointer to a queue for example.
  */
-DLL_EXPORT uadi_status uadi_claim_device(uadi_lib_handle lib_handle, uadi_device_handle* device_handle, char const* device_key);
+DLL_EXPORT uadi_status uadi_claim_device(
+    uadi_lib_handle lib_handle, 
+    uadi_device_handle* device_handle, 
+    char const* device_key, 
+    uadi_receive_callback callback, 
+    void* user_data,
+    uadi_chunk_ptr* chunk_array, 
+    size_t chunk_count);
 
 /**
  * @brief This function is used to push chunks of memory to a device.
@@ -158,17 +175,6 @@ DLL_EXPORT uadi_status uadi_claim_device(uadi_lib_handle lib_handle, uadi_device
  * The push chunks function will hand over chunks of memory to a device inside the library. The chunks might be empty, but might also be filled with control data for the device to handle.
  */
 DLL_EXPORT uadi_status uadi_push_chunks(uadi_device_handle device_handle, uadi_chunk_ptr* chunk_array, size_t chunk_count);
-
-/**
- * @brief This function is used to register a callback function to a device.
- * @param device_handle Pointer to the device handle.
- * @param callback Pointer to the callback function.
- * @param user_data Pointer to the user data.
- * @return uadi_status Status code of the operation.
- * @see uadi_release_device(...)
- * The callback function is called whenever a new chunk from the device is available. A device can't be released as long as there is available data from the device. The release function will stop the new acquisition of data, but will make sure, that the callback function is called with all available data.
- */
-DLL_EXPORT uadi_status uadi_register_receive_callback(uadi_device_handle device_handle, uadi_receive_callback callback, void* user_data);
 
 /**
  * @brief This function releases a device.

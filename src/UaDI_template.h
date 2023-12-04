@@ -144,7 +144,8 @@ DLL_EXPORT uadi_status uadi_init(uadi_lib_handle* lib_handle);
 /**
  * @brief This function fills a preallocated chunk of memory with JSON-formatted meta-data from the library itself. 
  * @param lib_handle Pointer to the library handle.
- * @param meta_data Pointer to the preallocated chunk of memory.
+ * @param meta_data Pointer to the preallocated memory for the meta-string.
+ * @param meta_data_size Size of the preallocated memory for the meta-string.
  * @return uadi_status Status code of the operation.
  * Meta-data can include all kinds of data, such as device information, version 
  * information, etc.
@@ -154,12 +155,16 @@ DLL_EXPORT uadi_status uadi_init(uadi_lib_handle* lib_handle);
  * have to call the function again with a larger chunk of memory.
  * A consumer is not required to call this function.
  */
-DLL_EXPORT uadi_status uadi_get_meta_data(uadi_lib_handle lib_handle, uadi_chunk_ptr meta_data);
+DLL_EXPORT uadi_status uadi_get_meta_data(
+    uadi_lib_handle lib_handle, 
+    char* meta_data,
+    size_t meta_data_size);
 
 /**
  * @brief This function enumerates all available data producer devices.
  * @param lib_handle Pointer to the library handle.
- * @param device_list Pointer to preallocated chunk where device list shall be stored.
+ * @param device_list Pointer to preallocated charbuffer where device list shall be stored.
+ * @param device_list_size Size of the preallocated charbuffer.
  * @return uadi_status Status code of the operation.
  * @see uadi_claim_device(...)
  * @see uadi_release_device(...)
@@ -169,7 +174,10 @@ DLL_EXPORT uadi_status uadi_get_meta_data(uadi_lib_handle lib_handle, uadi_chunk
  * one consumer at a time can claim it. The received device list is a 
  * JSON-formatted string, containing all available devices.
  */
-DLL_EXPORT uadi_status uadi_enumerate(uadi_lib_handle handle, uadi_chunk_ptr device_list);
+DLL_EXPORT uadi_status uadi_enumerate(
+    uadi_lib_handle handle, 
+    char* device_list,
+    size_t device_list_size);
 
 /**
  * @brief This function claims a data producer device.

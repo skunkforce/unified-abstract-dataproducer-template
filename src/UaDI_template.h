@@ -125,6 +125,18 @@ struct uadi_receive_struct{
 typedef void(*uadi_receive_callback)(uadi_receive_struct*, void*);
 
 /**
+* @brief Callback function for recycling unused chunks.
+* @see uadi_release_device(...)
+* This function is defined by the consumer, and called from the library in 
+* order to recycle unused chunks back to the consumer. The function needs to
+* know the context, therefor it'll also take a void* to the consumers context.
+* Eventhough the context may be the same as the pointer for the 
+* receive_callback, it can be used separately. 
+*/
+typedef void(*uadi_recycle_unused_chunk_callback)(chunk_ptr, size_t, void*);
+
+
+/**
  * @brief Initialize the library and fills a preallocated empty handle with an actual library handle.
  * @param lib_handle Pointer to the preallocated library handle.
  * @return uadi_status Status code of the operation.
@@ -176,8 +188,10 @@ DLL_EXPORT uadi_status uadi_enumerate(uadi_lib_handle handle, uadi_chunk_ptr dev
  * @param lib_handle Pointer to the library handle.
  * @param device_handle Pointer to the preallocated empty device handle.
  * @param device_key Pointer to a zero-terminated array of characters containing the device key.
- * @param callback Pointer to the callback function.
- * @param user_data Pointer to the consumers context.
+ * @param receive_callback Pointer to the callback function.
+ * @param receive_context Pointer to the consumers context.
+ * @param recycle_callback Pointer to the recycle callback function.
+ * @param recycle_context Pointer to the consumers context.
  * @param chunk_array Pointer to the preallocated chunk array.
  * @param chunk_count Number of chunks in the chunk array.
  * @return uadi_status Status code of the operation.
@@ -199,6 +213,8 @@ DLL_EXPORT uadi_status uadi_enumerate(uadi_lib_handle handle, uadi_chunk_ptr dev
  * from the device. The release function will stop the new acquisition of data, 
  * but will make sure, that the callback function is called with all available 
  * data.
+ * A device may also give back unused chunks to the consumer, this is done
+ * by using the recycle function.
  * The user data pointer is used by the consumer to provide context for the 
  * function. It might be a pointer to a queue for example.
  */
@@ -206,8 +222,10 @@ DLL_EXPORT uadi_status uadi_claim_device(
     uadi_lib_handle lib_handle, 
     uadi_device_handle* device_handle, 
     char const* device_key, 
-    uadi_receive_callback callback, 
-    void* user_data,
+    uadi_receive_callback receive_callback, 
+    void* receive_context,
+    uadi_recycle_unused_chunk_callback recycle_callback,
+    void* recycle_context,
     uadi_chunk_ptr* chunk_array, 
     size_t chunk_count);
 

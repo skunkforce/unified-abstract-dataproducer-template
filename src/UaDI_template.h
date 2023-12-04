@@ -110,6 +110,7 @@ struct uadi_receive_struct{
 #define UADI_INVALID_HANDLE -3
 #define UADI_NO_DATA -4
 #define UADI_OUT_OF_CHUNKS -5
+#define UADI_NOT_SUPPORTED -6
 #define UADI_INTERNAL_ERROR -255
 
 /**
@@ -218,10 +219,28 @@ DLL_EXPORT uadi_status uadi_claim_device(
  * @param chunk_count Number of chunks in the chunk array.
  * @return uadi_status Status code of the operation.
  * The push chunks function will hand over chunks of memory to a device inside 
- * the library. The chunks might be empty, but might also be filled with 
- * control data for the device to handle.
+ * the library. Any data that is stored in the chunk will be overwritten by the 
+ * device.
  */
-DLL_EXPORT uadi_status uadi_push_chunks(uadi_device_handle device_handle, uadi_chunk_ptr* chunk_array, size_t chunk_count);
+DLL_EXPORT uadi_status uadi_push_chunks(
+    uadi_device_handle device_handle, 
+    uadi_chunk_ptr* chunk_array, 
+    size_t chunk_count);
+
+/**
+ * @brief This function sends a JSON-formatted string to a device.
+ * @param device_handle the device handle.
+ * @param chunk_ptr Pointer to a JSON-filled chunk of memory.
+ * @return uadi_status Status code of the operation.
+ * This function can be used to send control data to a device. 
+ * It is not part of the generic interface, which control data is allowed.
+ * If a device is attached that doesn't support any control data, this function
+ * will return UADI_NOT_SUPPORTED.
+ */
+DLL_EXPORT uadi_status uadi_send_json(
+    uadi_device_handle device_handle, 
+    uadi_chunk_ptr chunk_ptr);
+
 
 /**
  * @brief This function releases a device.

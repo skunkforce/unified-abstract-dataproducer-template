@@ -75,6 +75,7 @@ typedef void* uadi_device_handle;
  * library via the uadi_push_chunks(...) function.
  */
 typedef unsigned char* uadi_chunk_ptr;
+#define UADI_DEFAULT_CHUNK_SIZE 128 * 1024
 
 /**
  * @brief Status code for uadi_receive_callback.

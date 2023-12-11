@@ -135,7 +135,7 @@ typedef void(*uadi_receive_callback)(uadi_receive_struct*, void*);
 * Eventhough the context may be the same as the pointer for the 
 * receive_callback, it can be used separately. 
 */
-typedef void(*uadi_recycle_unused_chunk_callback)(chunk_ptr, size_t, void*);
+typedef void(*uadi_recycle_unused_chunk_callback)(uadi_chunk_ptr, size_t, void*);
 
 
 /**
